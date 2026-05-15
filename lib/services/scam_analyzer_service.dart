@@ -27,7 +27,12 @@ class ScamAnalyzerService {
 
     // 3. ML-Style Classification with adaptive weights
     final signals = _classifier.classify(features);
-    final confidenceScore = _classifier.calculateConfidence(signals, adaptiveWeights: adaptiveWeights);
+    final confidenceScore = _classifier.calculateConfidence(
+      signals, 
+      features, 
+      input,
+      adaptiveWeights: adaptiveWeights,
+    );
     final riskLevel = _classifier.getRiskLevel(confidenceScore);
 
     // 4. Explanation Generation

@@ -3,6 +3,7 @@ import '../models/risk_level.dart';
 import '../models/scam_signal.dart';
 import '../models/scam_category.dart';
 import '../models/extracted_features.dart';
+import '../constants/feature_keys.dart';
 
 class MlScamClassifierService {
   List<ScamSignal> classify(ExtractedFeatures f) {
@@ -141,7 +142,6 @@ class MlScamClassifierService {
   }
 
   void _applyCombinationRules(ExtractedFeatures f, List<ScamSignal> signals) {
-    // Restriction + URL + Action: min score 75
     if (f.hasAccountRestrictionLanguage && f.hasUrl && f.hasActionRequest) {
       signals.add(const ScamSignal(
         title: 'Classic Phishing Pattern',
@@ -151,7 +151,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Brand + Suspicious URL: min score 70
     if (f.hasBrandName && (f.hasSuspiciousDomainKeyword || f.hasLookalikeBrandDomain)) {
       signals.add(const ScamSignal(
         title: 'Brand Impersonation Phish',
@@ -161,7 +160,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Credential request + URL: min score 80
     if (f.hasCredentialRequest && f.hasUrl) {
       signals.add(const ScamSignal(
         title: 'Login Theft Attempt',
@@ -171,7 +169,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Reward + URL + Action: min score 70
     if (f.hasRewardLanguage && f.hasUrl && f.hasActionRequest) {
       signals.add(const ScamSignal(
         title: 'Prize Lure Pattern',
@@ -181,7 +178,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Government + Phone: min score 75
     if (f.hasGovernmentLanguage && f.hasPhoneNumber) {
       signals.add(const ScamSignal(
         title: 'Official Impersonation',
@@ -191,7 +187,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Delivery + URL + Action: min score 65
     if (f.hasDeliveryLanguage && f.hasUrl && f.hasActionRequest) {
       signals.add(const ScamSignal(
         title: 'Delivery Scam Pattern',
@@ -201,7 +196,6 @@ class MlScamClassifierService {
       ));
     }
 
-    // Shortened URL + Financial/Account/Reward: min score 75
     if (f.hasShortenedUrl && (f.hasFinancialLanguage || f.hasAccountRestrictionLanguage || f.hasRewardLanguage)) {
       signals.add(const ScamSignal(
         title: 'Masked Malicious Link',
@@ -212,31 +206,43 @@ class MlScamClassifierService {
     }
   }
 
-  int calculateConfidence(List<ScamSignal> signals, {Map<String, int> adaptiveWeights = const {}}) {
-    if (signals.isEmpty) return 0;
+  int calculateConfidence(
+    List<ScamSignal> signals, 
+    ExtractedFeatures features, 
+    String message,
+    {Map<String, int> adaptiveWeights = const {}}
+  ) {
+    if (signals.isEmpty && message.trim().isEmpty) return 0;
     
-    int total = 0;
-    
+    // 1. Calculate Base Score from signals
+    int baseScore = 0;
     for (final s in signals) {
-      int weight = s.weight;
-      
-      // Apply adaptive signal boost/reduction
-      final signalKey = 'signal_${s.title}';
-      weight += adaptiveWeights[signalKey] ?? 0;
-      
-      // Apply adaptive category boost/reduction
-      final categoryKey = 'category_${s.category.name}';
-      weight += adaptiveWeights[categoryKey] ?? 0;
-      
-      // Ensure specific feature weight doesn't go below 0 (keep it deterministic)
-      total += max(0, weight);
+      baseScore += s.weight;
     }
     
-    // Add bonus for multiple signals
-    if (signals.length > 2) total += 10;
-    if (signals.length > 4) total += 15;
-    
-    return min(100, total);
+    // Bonus for multiple signals
+    if (signals.length > 2) baseScore += 10;
+    if (signals.length > 4) baseScore += 15;
+
+    // 2. Calculate Feature Boosts (using central keys)
+    int featureBoost = 0;
+    final featureMap = features.toMap();
+    featureMap.forEach((key, detected) {
+      if (detected) {
+        featureBoost += adaptiveWeights['feature_$key'] ?? 0;
+      }
+    });
+
+    // 3. Calculate Fingerprint Boost
+    final fingerprint = generateFingerprint(message);
+    int fingerprintBoost = adaptiveWeights['fingerprint_$fingerprint'] ?? 0;
+
+    // 4. Return clamped result
+    return (baseScore + featureBoost + fingerprintBoost).clamp(0, 100);
+  }
+
+  String generateFingerprint(String message) {
+    return message.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   RiskLevel getRiskLevel(int score) {

@@ -14,7 +14,7 @@ void main() {
     test('low confidence for safe features', () {
       final f = ExtractedFeatures(messageLength: 50);
       final signals = service.classify(f);
-      final score = service.calculateConfidence(signals);
+      final score = service.calculateConfidence(signals, f, 'Test');
       expect(score, 0);
       expect(service.getRiskLevel(score), RiskLevel.safe);
     });
@@ -26,10 +26,7 @@ void main() {
         hasActionRequest: true,
       );
       final signals = service.classify(f);
-      final score = service.calculateConfidence(signals);
-      // Base: Restriction(25) + Url(10) + Action(20) = 55
-      // Combination: Phishing Pattern(40)
-      // Total: 95
+      final score = service.calculateConfidence(signals, f, 'Message');
       expect(score, greaterThanOrEqualTo(75));
       expect(service.getRiskLevel(score), RiskLevel.dangerous);
     });
@@ -41,7 +38,7 @@ void main() {
         hasUrl: true,
       );
       final signals = service.classify(f);
-      final score = service.calculateConfidence(signals);
+      final score = service.calculateConfidence(signals, f, 'Message');
       expect(score, greaterThanOrEqualTo(70));
       expect(service.getRiskLevel(score), RiskLevel.dangerous);
     });
@@ -52,7 +49,7 @@ void main() {
         hasUrl: true,
       );
       final signals = service.classify(f);
-      final score = service.calculateConfidence(signals);
+      final score = service.calculateConfidence(signals, f, 'Message');
       expect(score, greaterThanOrEqualTo(80));
     });
 

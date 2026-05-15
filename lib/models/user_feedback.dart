@@ -1,6 +1,7 @@
 import '../models/risk_level.dart';
 import '../models/scam_signal.dart';
 import '../models/scam_category.dart';
+import '../models/extracted_features.dart';
 
 enum UserFeedbackType {
   correct,
@@ -19,6 +20,7 @@ class UserFeedback {
   final DateTime createdAt;
   final List<ScamSignal> detectedSignals;
   final List<ScamCategory> categories;
+  final ExtractedFeatures features;
 
   UserFeedback({
     required this.message,
@@ -28,6 +30,7 @@ class UserFeedback {
     required this.createdAt,
     required this.detectedSignals,
     required this.categories,
+    required this.features,
   });
 
   Map<String, dynamic> toJson() {
@@ -37,7 +40,6 @@ class UserFeedback {
       'predictedConfidence': predictedConfidence,
       'feedbackType': feedbackType.toJson(),
       'createdAt': createdAt.toIso8601String(),
-      // In a real app we would serialize signals/categories fully
       'signals': detectedSignals.map((s) => s.title).toList(),
       'categories': categories.map((c) => c.name).toList(),
     };

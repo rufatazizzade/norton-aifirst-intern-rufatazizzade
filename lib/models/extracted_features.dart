@@ -1,3 +1,5 @@
+import '../constants/feature_keys.dart';
+
 class ExtractedFeatures {
   final bool hasUrl;
   final bool hasShortenedUrl;
@@ -44,6 +46,24 @@ class ExtractedFeatures {
     this.detectedUrls = const [],
     this.detectedBrands = const [],
   });
+
+  Map<String, bool> toMap() {
+    return {
+      FeatureKeys.hasUrl: hasUrl,
+      FeatureKeys.hasShortenedUrl: hasShortenedUrl,
+      FeatureKeys.hasSuspiciousDomainKeyword: hasSuspiciousDomainKeyword,
+      FeatureKeys.hasUrgencyLanguage: hasUrgencyLanguage,
+      FeatureKeys.hasThreatLanguage: hasThreatLanguage,
+      FeatureKeys.hasRewardLanguage: hasRewardLanguage,
+      FeatureKeys.hasCredentialRequest: hasCredentialRequest,
+      FeatureKeys.hasFinancialLanguage: hasFinancialLanguage,
+      FeatureKeys.hasDeliveryLanguage: hasDeliveryLanguage,
+      FeatureKeys.hasGovernmentLanguage: hasGovernmentLanguage,
+      FeatureKeys.hasAccountRestrictionLanguage: hasAccountRestrictionLanguage,
+      FeatureKeys.hasActionRequest: hasActionRequest,
+      FeatureKeys.hasBrandName: hasBrandName,
+    };
+  }
 
   @override
   String toString() {

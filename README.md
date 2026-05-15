@@ -63,12 +63,12 @@ flutter test
 This prototype includes a **local adaptive classifier** with a human-in-the-loop feedback loop. After each analysis, you can confirm whether the result was correct or flag it as "Actually safe" / "Actually a scam."
 
 ### How it works:
-- **Local Learning**: Direct user feedback is stored locally using `shared_preferences`.
-- **Adaptive Scoring**: The app adjusts small feature weights (+/- 3 to 15 points) based on your corrections.
-- **Privacy First**: Feedback and learned weights are stored **only on this device**. No messages or identifiers are ever sent to a server.
-- **Dynamic Improvement**: Over time, the app becomes more sensitive to patterns you flag as dangerous and more lenient toward those you flag as safe.
+- **Local Fingerprinting**: The app creates a unique "fingerprint" of each analyzed message. If you repeatedly mark the same message as a scam, the app learns this specific fingerprint and will increase the risk score for that exact message (+15 boost per feedback, capped at +40).
+- **Adaptive Feature Weights**: The app also adjusts small weights for broader features (like "has shortened URL" or "has urgency language") based on your corrections.
+- **Privacy First**: Feedback, fingerprints, and learned weights are stored **only on this device** using `shared_preferences`. No message content or identifiers are ever sent to an external server.
+- **Dynamic Improvement**: The app re-analyzes the message immediately after you provide feedback, providing instant visual confirmation that it has learned from your input.
 
-*Note: This is an ML-inspired adaptive scoring prototype, not a fully trained production model. It demonstrates a privacy-friendly approach to local model refinement.*
+*Note: This is an ML-inspired adaptive scoring prototype, not a fully trained neural network. It demonstrates a privacy-preserving approach to local model refinement in an AI-First mobile app.*
 
 ## Premium Security Dashboard UI/UX
 

@@ -2,60 +2,58 @@ import 'dart:math';
 import '../models/user_feedback.dart';
 import '../models/risk_level.dart';
 import 'local_feedback_storage_service.dart';
+import 'ml_scam_classifier_service.dart';
 
 class FeedbackLearningService {
   final LocalFeedbackStorageService _storage = LocalFeedbackStorageService();
+  final MlScamClassifierService _classifier = MlScamClassifierService();
 
-  static const int maxAdjustment = 15;
-  static const int minAdjustment = -15;
+  static const int maxFeatureAdjustment = 15;
+  static const int minFeatureAdjustment = -15;
+  
+  static const int maxFingerprintAdjustment = 40;
+  static const int minFingerprintAdjustment = -40;
 
   Future<void> processFeedback(UserFeedback feedback) async {
     // 1. Save the raw feedback
     await _storage.saveFeedback(feedback);
 
     // 2. Adjust weights if feedback is not just "Correct"
-    if (feedback.feedbackType == UserFeedbackType.correct) {
-      // Optional: tiny reinforcement
-      if (feedback.predictedRiskLevel == RiskLevel.dangerous) {
-        await _updateWeights(feedback, 1);
-      }
-      return;
-    }
-
     if (feedback.feedbackType == UserFeedbackType.actuallyScam) {
       // The model missed it or was unsure. Increase weights.
-      // Increase more if it was predicted as Safe.
-      int boost = feedback.predictedRiskLevel == RiskLevel.safe ? 8 : 5;
-      await _updateWeights(feedback, boost);
+      await _updateAdaptiveLearning(feedback, 5, 15);
     } else if (feedback.feedbackType == UserFeedbackType.actuallySafe) {
       // False positive. Decrease weights.
-      int reduction = feedback.predictedRiskLevel == RiskLevel.dangerous ? -8 : -5;
-      await _updateWeights(feedback, reduction);
+      await _updateAdaptiveLearning(feedback, -5, -15);
     }
   }
 
-  Future<void> _updateWeights(UserFeedback feedback, int delta) async {
+  Future<void> _updateAdaptiveLearning(UserFeedback feedback, int featureDelta, int fingerprintDelta) async {
     final currentWeights = await _storage.getAdaptiveWeights();
 
-    // Update signal weights (titles)
-    for (final signal in feedback.detectedSignals) {
-      final key = 'signal_${signal.title}';
-      currentWeights[key] = _clampWeight((currentWeights[key] ?? 0) + delta);
-    }
+    // 1. Update Feature Weights (using central keys from ExtractedFeatures)
+    final featureMap = feedback.features.toMap();
+    featureMap.forEach((key, detected) {
+      if (detected) {
+        final weightKey = 'feature_$key';
+        currentWeights[weightKey] = _clampFeatureWeight((currentWeights[weightKey] ?? 0) + featureDelta);
+      }
+    });
 
-    // Update category weights
-    for (final category in feedback.categories) {
-      final key = 'category_${category.name}';
-      // Categories get slightly smaller adjustments
-      int catDelta = (delta > 0) ? max(1, delta ~/ 2) : min(-1, delta ~/ 2);
-      currentWeights[key] = _clampWeight((currentWeights[key] ?? 0) + catDelta);
-    }
+    // 2. Update Message Fingerprint Boost (for exact match)
+    final fingerprint = _classifier.generateFingerprint(feedback.message);
+    final fingerprintKey = 'fingerprint_$fingerprint';
+    currentWeights[fingerprintKey] = _clampFingerprintWeight((currentWeights[fingerprintKey] ?? 0) + fingerprintDelta);
 
     await _storage.saveAdaptiveWeights(currentWeights);
   }
 
-  int _clampWeight(int value) {
-    return value.clamp(minAdjustment, maxAdjustment);
+  int _clampFeatureWeight(int value) {
+    return value.clamp(minFeatureAdjustment, maxFeatureAdjustment);
+  }
+
+  int _clampFingerprintWeight(int value) {
+    return value.clamp(minFingerprintAdjustment, maxFingerprintAdjustment);
   }
 
   Future<void> resetLearning() async {

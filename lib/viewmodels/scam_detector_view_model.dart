@@ -52,10 +52,18 @@ class ScamDetectorViewModel extends ChangeNotifier {
       createdAt: DateTime.now(),
       detectedSignals: _result!.signals,
       categories: _result!.categories,
+      features: _result!.features, // Pass features for adaptive learning
     );
 
     await _analyzerService.submitFeedback(feedback);
     _feedbackProvided = true;
+
+    // If result was "actually safe" or "actually scam", re-analyze to show improvement
+    if (type != UserFeedbackType.correct) {
+      final updatedResult = await _analyzerService.analyze(_inputText);
+      _result = updatedResult;
+    }
+    
     notifyListeners();
   }
 
