@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/scam_detector_screen.dart';
+import 'viewmodels/scam_detector_view_model.dart';
 
 void main() {
-  runApp(const ScamDetectorApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ScamDetectorViewModel(),
+      child: const ScamDetectorApp(),
+    ),
+  );
 }
 
 class ScamDetectorApp extends StatelessWidget {

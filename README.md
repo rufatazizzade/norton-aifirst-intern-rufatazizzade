@@ -58,12 +58,26 @@ flutter test
 ```
 *Requires Flutter 3.x+. No API keys or environment variables required.*
 
-## Architecture
+## Human-in-the-loop Feedback Learning
+
+This prototype includes a **local adaptive classifier** with a human-in-the-loop feedback loop. After each analysis, you can confirm whether the result was correct or flag it as "Actually safe" / "Actually a scam."
+
+### How it works:
+- **Local Learning**: Direct user feedback is stored locally using `shared_preferences`.
+- **Adaptive Scoring**: The app adjusts small feature weights (+/- 3 to 15 points) based on your corrections.
+- **Privacy First**: Feedback and learned weights are stored **only on this device**. No messages or identifiers are ever sent to a server.
+- **Dynamic Improvement**: Over time, the app becomes more sensitive to patterns you flag as dangerous and more lenient toward those you flag as safe.
+
+*Note: This is an ML-inspired adaptive scoring prototype, not a fully trained production model. It demonstrates a privacy-friendly approach to local model refinement.*
+
+## Project Architecture
 - **Models**: Defines `RiskLevel`, `ScamCategory`, `ExtractedFeatures`, `ScamSignal`, and `ScamAnalysisResult`.
 - **Services**:
   - `FeatureExtractorService`: Parses raw text into structured features.
-  - `MlScamClassifierService`: Applies weights and combination rules to features.
-  - `ScamAnalyzerService`: Orchestrates the analysis and generates human-readable advice.
+  - `MlScamClassifierService`: Applies weighted scoring and combination rules.
+  - `ScamAnalyzerService`: Orchestrates the analysis pipeline.
+  - `LocalFeedbackStorageService`: Manages persistence of user feedback and adaptive weights.
+  - `FeedbackLearningService`: Calculates weight adjustments based on user feedback.
 - **ViewModel**: `ScamDetectorViewModel` manages UI state and the analysis lifecycle.
 - **Screens/Widgets**: Declarative UI components built with a "premium assistant" aesthetic.
 

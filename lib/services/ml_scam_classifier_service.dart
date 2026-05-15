@@ -212,11 +212,25 @@ class MlScamClassifierService {
     }
   }
 
-  int calculateConfidence(List<ScamSignal> signals) {
+  int calculateConfidence(List<ScamSignal> signals, {Map<String, int> adaptiveWeights = const {}}) {
     if (signals.isEmpty) return 0;
     
-    // Simple weighted sum
-    int total = signals.fold(0, (sum, s) => sum + s.weight);
+    int total = 0;
+    
+    for (final s in signals) {
+      int weight = s.weight;
+      
+      // Apply adaptive signal boost/reduction
+      final signalKey = 'signal_${s.title}';
+      weight += adaptiveWeights[signalKey] ?? 0;
+      
+      // Apply adaptive category boost/reduction
+      final categoryKey = 'category_${s.category.name}';
+      weight += adaptiveWeights[categoryKey] ?? 0;
+      
+      // Ensure specific feature weight doesn't go below 0 (keep it deterministic)
+      total += max(0, weight);
+    }
     
     // Add bonus for multiple signals
     if (signals.length > 2) total += 10;

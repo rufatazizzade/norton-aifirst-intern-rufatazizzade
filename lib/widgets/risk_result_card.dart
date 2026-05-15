@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/scam_analysis_result.dart';
 import '../models/risk_level.dart';
+import '../models/user_feedback.dart';
 import 'confidence_bar.dart';
 import 'recommendation_card.dart';
 import 'signal_chip.dart';
@@ -8,8 +9,15 @@ import 'category_badge.dart';
 
 class RiskResultCard extends StatelessWidget {
   final ScamAnalysisResult result;
+  final bool feedbackProvided;
+  final Function(UserFeedbackType) onFeedback;
 
-  const RiskResultCard({super.key, required this.result});
+  const RiskResultCard({
+    super.key, 
+    required this.result,
+    this.feedbackProvided = false,
+    required this.onFeedback,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +127,10 @@ class RiskResultCard extends StatelessWidget {
                         color: colors.accent,
                       ),
 
+                      // Feedback Section
+                      const SizedBox(height: 32),
+                      _buildFeedbackSection(theme),
+
                       // Why we flagged this Section
                       if (result.signals.isNotEmpty) ...[
                         const SizedBox(height: 32),
@@ -153,6 +165,93 @@ class RiskResultCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFeedbackSection(ThemeData theme) {
+    if (feedbackProvided) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Thanks for your feedback!',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'This helps improve future checks on this device.',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Was this result helpful?',
+          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            _feedbackButton(theme, 'Correct', Icons.thumb_up_alt_outlined, UserFeedbackType.correct),
+            const SizedBox(width: 8),
+            _feedbackButton(theme, 'Actually safe', Icons.shield_outlined, UserFeedbackType.actuallySafe),
+            const SizedBox(width: 8),
+            _feedbackButton(theme, 'Actually scam', Icons.warning_amber_rounded, UserFeedbackType.actuallyScam),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(Icons.lock_outline_rounded, size: 12, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 4),
+            Text(
+              'Feedback is stored locally on this device only.',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _feedbackButton(ThemeData theme, String label, IconData icon, UserFeedbackType type) {
+    return Expanded(
+      child: OutlinedButton(
+        onPressed: () => onFeedback(type),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(height: 4),
+            Text(label, style: const TextStyle(fontSize: 10), textAlign: TextAlign.center),
+          ],
+        ),
       ),
     );
   }

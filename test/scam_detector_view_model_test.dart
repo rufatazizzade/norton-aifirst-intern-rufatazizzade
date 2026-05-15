@@ -1,11 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scam_detector/viewmodels/scam_detector_view_model.dart';
 import 'package:scam_detector/models/risk_level.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late ScamDetectorViewModel viewModel;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     viewModel = ScamDetectorViewModel();
   });
 
@@ -38,6 +41,7 @@ void main() {
       expect(viewModel.inputText, '');
       expect(viewModel.result, isNull);
       expect(viewModel.isAnalyzing, false);
+      expect(viewModel.feedbackProvided, false);
     });
 
     test('canAnalyze is false for empty/whitespace input', () {

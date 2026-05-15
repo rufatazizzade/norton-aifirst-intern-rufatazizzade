@@ -1,33 +1,39 @@
 import '../models/risk_level.dart';
-import '../models/scam_signal.dart';
 import '../models/scam_analysis_result.dart';
 import '../models/scam_category.dart';
-import '../models/extracted_features.dart';
+import '../models/user_feedback.dart';
 import 'feature_extractor_service.dart';
 import 'ml_scam_classifier_service.dart';
+import 'local_feedback_storage_service.dart';
+import 'feedback_learning_service.dart';
 
 class ScamAnalyzerService {
   final FeatureExtractorService _extractor = FeatureExtractorService();
   final MlScamClassifierService _classifier = MlScamClassifierService();
+  final LocalFeedbackStorageService _storage = LocalFeedbackStorageService();
+  final FeedbackLearningService _learning = FeedbackLearningService();
 
-  ScamAnalysisResult analyze(String input) {
+  Future<ScamAnalysisResult> analyze(String input) async {
     if (input.trim().isEmpty) {
       return ScamAnalysisResult.safe();
     }
 
-    // 1. Feature Extraction
+    // 1. Load adaptive weights from local storage
+    final adaptiveWeights = await _storage.getAdaptiveWeights();
+
+    // 2. Feature Extraction
     final features = _extractor.extract(input);
 
-    // 2. ML-Style Classification
+    // 3. ML-Style Classification with adaptive weights
     final signals = _classifier.classify(features);
-    final confidenceScore = _classifier.calculateConfidence(signals);
+    final confidenceScore = _classifier.calculateConfidence(signals, adaptiveWeights: adaptiveWeights);
     final riskLevel = _classifier.getRiskLevel(confidenceScore);
 
-    // 3. Explanation Generation
+    // 4. Explanation Generation
     final explanation = _buildExplanation(riskLevel, signals);
     final recommendation = _buildRecommendation(riskLevel);
     
-    // 4. Extract Categories
+    // 5. Extract Categories
     final categories = signals.map((s) => s.category).toSet().toList();
     if (categories.isEmpty) categories.add(ScamCategory.unknown);
 
@@ -40,6 +46,14 @@ class ScamAnalyzerService {
       categories: categories,
       features: features,
     );
+  }
+
+  Future<void> submitFeedback(UserFeedback feedback) async {
+    await _learning.processFeedback(feedback);
+  }
+
+  Future<void> resetLearning() async {
+    await _learning.resetLearning();
   }
 
   String _buildExplanation(RiskLevel level, List<ScamSignal> signals) {

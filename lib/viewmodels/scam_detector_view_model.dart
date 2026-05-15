@@ -1,31 +1,82 @@
-import 'package:flutter/foundation.dart';
-
+import 'package:flutter/material.dart';
 import '../models/scam_analysis_result.dart';
+import '../models/user_feedback.dart';
 import '../services/scam_analyzer_service.dart';
 
-/// ViewModel for the Scam Detector screen.
-///
-/// Manages input state, analysis lifecycle, and result presentation.
-/// Uses [ChangeNotifier] for lightweight state management compatible
-/// with Flutter's built-in [ListenableBuilder].
 class ScamDetectorViewModel extends ChangeNotifier {
-  final ScamAnalyzerService _service;
-
-  ScamDetectorViewModel({ScamAnalyzerService? service})
-      : _service = service ?? ScamAnalyzerService();
-
-  // ── State ──
-
+  final ScamAnalyzerService _analyzerService = ScamAnalyzerService();
+  
   String _inputText = '';
-  String get inputText => _inputText;
-
-  bool _isAnalyzing = false;
-  bool get isAnalyzing => _isAnalyzing;
-
   ScamAnalysisResult? _result;
+  bool _isAnalyzing = false;
+  bool _feedbackProvided = false;
+
+  String get inputText => _inputText;
   ScamAnalysisResult? get result => _result;
+  bool get isAnalyzing => _isAnalyzing;
+  bool get feedbackProvided => _feedbackProvided;
+
+  void updateInput(String text) {
+    _inputText = text;
+    notifyListeners();
+  }
 
   bool get canAnalyze => _inputText.trim().isNotEmpty && !_isAnalyzing;
+
+  Future<void> analyze() async {
+    if (!canAnalyze) return;
+
+    _isAnalyzing = true;
+    _result = null;
+    _feedbackProvided = false;
+    notifyListeners();
+
+    try {
+      _result = await _analyzerService.analyze(_inputText);
+    } catch (e) {
+      debugPrint('Analysis error: $e');
+    } finally {
+      _isAnalyzing = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> provideFeedback(UserFeedbackType type) async {
+    if (_result == null || _feedbackProvided) return;
+
+    final feedback = UserFeedback(
+      message: _inputText,
+      predictedRiskLevel: _result!.riskLevel,
+      predictedConfidence: _result!.confidenceScore,
+      feedbackType: type,
+      createdAt: DateTime.now(),
+      detectedSignals: _result!.signals,
+      categories: _result!.categories,
+    );
+
+    await _analyzerService.submitFeedback(feedback);
+    _feedbackProvided = true;
+    notifyListeners();
+  }
+
+  Future<void> resetLearning() async {
+    await _analyzerService.resetLearning();
+    reset(); // Clear current results too
+    notifyListeners();
+  }
+
+  void reset() {
+    _inputText = '';
+    _result = null;
+    _isAnalyzing = false;
+    _feedbackProvided = false;
+    notifyListeners();
+  }
+
+  void useExample(String text) {
+    updateInput(text);
+    analyze();
+  }
 
   /// Predefined example messages for testing
   static const List<ExampleMessage> exampleMessages = [
@@ -54,48 +105,10 @@ class ScamDetectorViewModel extends ChangeNotifier {
       text: 'Hi, are we still meeting at 6 PM for dinner?',
     ),
   ];
-
-  // ── Actions ──
-
-  void updateInput(String value) {
-    _inputText = value;
-    notifyListeners();
-  }
-
-  void setExampleMessage(String text) {
-    _inputText = text;
-    _result = null;
-    notifyListeners();
-  }
-
-  /// Runs the analysis with a short simulated delay for UX polish.
-  Future<void> analyze() async {
-    if (!canAnalyze) return;
-
-    _isAnalyzing = true;
-    _result = null;
-    notifyListeners();
-
-    // Simulated processing delay for realism
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    _result = _service.analyze(_inputText);
-    _isAnalyzing = false;
-    notifyListeners();
-  }
-
-  void reset() {
-    _inputText = '';
-    _result = null;
-    _isAnalyzing = false;
-    notifyListeners();
-  }
 }
 
-/// A labeled example message for the quick-fill chips.
 class ExampleMessage {
   final String label;
   final String text;
-
   const ExampleMessage({required this.label, required this.text});
 }
