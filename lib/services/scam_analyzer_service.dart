@@ -1,6 +1,7 @@
 import '../models/risk_level.dart';
 import '../models/scam_analysis_result.dart';
 import '../models/scam_category.dart';
+import '../models/scam_signal.dart';
 import '../models/user_feedback.dart';
 import 'feature_extractor_service.dart';
 import 'ml_scam_classifier_service.dart';
