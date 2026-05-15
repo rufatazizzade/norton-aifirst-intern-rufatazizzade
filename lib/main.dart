@@ -19,23 +19,35 @@ class ScamDetectorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Color(0xFF005BD4); // Professional Security Blue
+    const surfaceLight = Color(0xFFF8FAFC);
+    const surfaceDark = Color(0xFF0F172A);
+
     return MaterialApp(
       title: 'Scam Message Detector',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.light, // Preferred for the "White Card" aesthetic
+      themeMode: ThemeMode.system, // Support both light and dark
 
       // ── Premium Light Theme ──
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        colorSchemeSeed: const Color(0xFF4F46E5), // Indigo primary
+        colorSchemeSeed: primaryColor,
+        scaffoldBackgroundColor: surfaceLight,
+        cardTheme: CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
+        ),
         textTheme: GoogleFonts.interTextTheme(
           ThemeData(brightness: Brightness.light).textTheme,
         ).copyWith(
-          headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          headlineSmall: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+          headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: const Color(0xFF1E293B)),
+          headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: const Color(0xFF1E293B)),
+          titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: const Color(0xFF1E293B)),
+          bodyLarge: GoogleFonts.inter(color: const Color(0xFF334155)),
+          bodyMedium: GoogleFonts.inter(color: const Color(0xFF475569)),
         ),
       ),
 
@@ -43,14 +55,22 @@ class ScamDetectorApp extends StatelessWidget {
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        colorSchemeSeed: const Color(0xFF818CF8),
+        colorSchemeSeed: primaryColor,
+        scaffoldBackgroundColor: surfaceDark,
+        cardTheme: CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color: const Color(0xFF1E293B),
+          surfaceTintColor: const Color(0xFF1E293B),
+        ),
         textTheme: GoogleFonts.interTextTheme(
           ThemeData(brightness: Brightness.dark).textTheme,
         ).copyWith(
-          headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          headlineSmall: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-          titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+          headlineLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white),
+          headlineMedium: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white),
+          titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: Colors.white),
+          bodyLarge: GoogleFonts.inter(color: const Color(0xFFCBD5E1)),
+          bodyMedium: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
         ),
       ),
 

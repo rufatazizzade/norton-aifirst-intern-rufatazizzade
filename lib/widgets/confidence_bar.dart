@@ -42,7 +42,7 @@ class ConfidenceBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: score / 100,
             minHeight: 8,
-            backgroundColor: color.withValues(alpha: 0.1),
+            backgroundColor: color.withOpacity(0.1),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),

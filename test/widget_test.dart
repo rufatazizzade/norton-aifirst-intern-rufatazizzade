@@ -16,10 +16,10 @@ void main() {
       ),
     );
 
-    // Verify that the header title exists (check SliverAppBar title or background text)
-    expect(find.text('Scam Detector'), findsOneWidget);
+    // Verify that the header title exists
+    expect(find.text('Message Safety'), findsOneWidget);
     
     // Verify that the analyze button exists
-    expect(find.text('Analyze message'), findsOneWidget);
+    expect(find.text('Analyze Message'), findsOneWidget);
   });
 }

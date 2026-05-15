@@ -70,6 +70,17 @@ This prototype includes a **local adaptive classifier** with a human-in-the-loop
 
 *Note: This is an ML-inspired adaptive scoring prototype, not a fully trained production model. It demonstrates a privacy-friendly approach to local model refinement.*
 
+## Premium Security Dashboard UI/UX
+
+The interface is inspired by modern mobile cybersecurity dashboard patterns, prioritizing trust, clarity, and ease of use for non-technical users.
+
+### Key Design Principles:
+- **Visual Safety Status**: A central dashboard-style card communicates risk levels (Safe, Suspicious, Dangerous) instantly using icons, color, and confidence scores.
+- **Privacy-First Microcopy**: Reassuring language reinforces that all analysis happens locally on the device.
+- **Clean Visual Hierarchy**: Uses rounded cards (24-28px), Material 3 typography, and a "cybersecurity blue" palette to create a professional assistant feel.
+- **Responsive & Accessible**: Optimized for mobile phones, desktop windows, and dark mode.
+- **Originality**: The design is a custom creation focused on security UX best practices; it does not use any copyrighted branding or assets.
+
 ## Project Architecture
 - **Models**: Defines `RiskLevel`, `ScamCategory`, `ExtractedFeatures`, `ScamSignal`, and `ScamAnalysisResult`.
 - **Services**:
