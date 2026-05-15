@@ -33,23 +33,22 @@ class ExampleList extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              mainAxisExtent: 56,
-            ),
-            itemCount: ScamDetectorViewModel.exampleMessages.length,
-            itemBuilder: (context, index) {
-              final example = ScamDetectorViewModel.exampleMessages[index];
-              return ExampleMessageCard(
-                label: example.label,
-                onTap: () => onSelect(example.text),
+          // Using Wrap instead of GridView for better responsiveness across devices
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: ScamDetectorViewModel.exampleMessages.map((example) {
+              return SizedBox(
+                // On mobile, show 2 per row. On desktop, show more.
+                width: (MediaQuery.of(context).size.width > 600) 
+                  ? 240 
+                  : (MediaQuery.of(context).size.width - 52) / 2,
+                child: ExampleMessageCard(
+                  label: example.label,
+                  onTap: () => onSelect(example.text),
+                ),
               );
-            },
+            }).toList(),
           ),
         ],
       ),
