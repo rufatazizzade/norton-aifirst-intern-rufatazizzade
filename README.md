@@ -1,140 +1,88 @@
-# Norton AI-First Intern Assignment — Scam Message Detector
+# Scam Message Detector — Gen Digital / Norton Internship Prototype
+
+A professional-grade, privacy-first mobile security assistant inspired by **Norton Genie**. This app uses a local, human-in-the-loop adaptive classifier to detect phishing and smishing patterns in SMS and emails.
 
 ## Project Overview
-This project is **Option B** of the Gen Digital / Norton Mobile Engineering AI-First Intern take-home assignment. It is a Flutter mobile application inspired by **Norton Genie** that helps users identify potential phishing and smishing attempts. 
-
-The app uses a **local ML-inspired hybrid classifier** to estimate scam risk from SMS, email snippets, and URLs. By performing all analysis on the device, it ensures maximum user privacy and deterministic results.
-
-> [!NOTE]
-> This application is a prototype that detects common phishing and smishing patterns and estimates risk based on suspicious signals. It does not claim to detect every phishing attack.
-
-## Features
-- **Message & URL Analysis**: Analyze text snippets for social engineering and malicious link patterns.
-- **ML-Inspired Local Classifier**: A hybrid scoring model that extracts features and applies weighted combination rules.
-- **Interactive Scenarios**: 6 pre-loaded examples covering Banking, Delivery, Prize, IRS, and Login scams.
-- **Detailed Risk Assessment**:
-  - **Risk Level**: Safe, Suspicious, or Dangerous.
-  - **Confidence Score**: A percentage-based estimate of risk.
-  - **Detected Signals**: Transparency on *why* a message was flagged.
-  - **Scam Categories**: Categorizes threats (e.g., Banking, Credential Theft).
-- **Actionable Recommendations**: Plain-English advice on how to handle the message.
-- **Premium UI/UX**: A modern, Material 3 "assistant-style" interface optimized for non-technical users.
-- **Comprehensive Testing**: 20+ unit tests covering detection logic and state management.
-
-## ML-Inspired Detection Approach
-The detection engine follows a hybrid machine-learning-style architecture:
-
-1. **Feature Extraction Layer**: Uses regular expressions and keyword analysis to extract features such as shortened URLs, lookalike domains, urgency language, threat patterns, and credential requests.
-2. **Weighted Scoring Model**: Each feature is assigned a weight based on its historical significance in phishing attacks.
-3. **Combination Rules**: A rule-based engine detects complex patterns (e.g., *Account Restriction + Action Request + URL*) that strongly indicate a coordinated phishing attempt.
-4. **Risk Classification Layer**: Map scores into three buckets:
-   - **0–24 Safe**: Low confidence of risk.
-   - **25–59 Suspicious**: Warning signs present; requires caution.
-   - **60–100 Dangerous**: High confidence of a malicious scam.
-
-**Why Local Analysis?**
-- **Privacy**: No message data or URLs ever leave the device.
-- **Speed**: Instant results without network latency.
-- **Determinism**: Facilitates reliable automated testing.
-- **Path to ML**: This architecture is designed to be easily replaced by a **TensorFlow Lite** model or a real-time ML API in the future.
-
-## Tech Stack
-- **Framework**: Flutter 3.x
-- **Language**: Dart 3.x
-- **Design System**: Material 3 (with Google Fonts: Outfit & Inter)
-- **State Management**: `ChangeNotifier` (MVVM)
-- **Testing**: `flutter_test`
+- **Option Chosen**: Option B — Scam Message Detector
+- **Core Vision**: Create a trustworthy, AI-First security dashboard that empowers users to identify scams locally on their device, ensuring 100% data privacy.
+- **Key Feature**: **Adaptive Learning Loop**. The app doesn't just use static rules; it learns from user feedback (confirmations and corrections) to refine its scoring weights and recognize specific message "fingerprints" locally.
 
 ## Setup Instructions
-```bash
-# 1. Install dependencies
-flutter pub get
 
-# 2. Run the app
-flutter run
+### Prerequisites
+- Flutter SDK (3.x recommended)
+- Android Studio / VS Code with Flutter plugins
+- A mobile emulator or physical device
 
-# 3. Run unit tests
-flutter test
-```
-*Requires Flutter 3.x+. No API keys or environment variables required.*
+### Build & Run
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/rufatazizzade/norton-aifirst-intern-rufat-azizzade.git
+    cd norton-aifirst-intern-rufat-azizzade
+    ```
+2.  **Install dependencies**:
+    ```bash
+    flutter pub get
+    ```
+3.  **Run the application**:
+    ```bash
+    flutter run
+    ```
+4.  **Run automated tests**:
+    ```bash
+    flutter test
+    ```
 
-## Human-in-the-loop Feedback Learning
+## App Screenshots
+*(Note: Please replace these placeholders with actual screenshots from your device/emulator)*
 
-This prototype includes a **local adaptive classifier** with a human-in-the-loop feedback loop. After each analysis, you can confirm whether the result was correct or flag it as "Actually safe" / "Actually a scam."
-
-### How it works:
-- **Local Fingerprinting**: The app creates a unique "fingerprint" of each analyzed message. If you repeatedly mark the same message as a scam, the app learns this specific fingerprint and will increase the risk score for that exact message (+15 boost per feedback, capped at +40).
-- **Adaptive Feature Weights**: The app also adjusts small weights for broader features (like "has shortened URL" or "has urgency language") based on your corrections.
-- **Privacy First**: Feedback, fingerprints, and learned weights are stored **only on this device** using `shared_preferences`. No message content or identifiers are ever sent to an external server.
-- **Dynamic Improvement**: The app re-analyzes the message immediately after you provide feedback, providing instant visual confirmation that it has learned from your input.
-
-*Note: This is an ML-inspired adaptive scoring prototype, not a fully trained neural network. It demonstrates a privacy-preserving approach to local model refinement in an AI-First mobile app.*
-
-## Premium Security Dashboard UI/UX
-
-The interface is inspired by modern mobile cybersecurity dashboard patterns, prioritizing trust, clarity, and ease of use for non-technical users.
-
-### Key Design Principles:
-- **Visual Safety Status**: A central dashboard-style card communicates risk levels (Safe, Suspicious, Dangerous) instantly using icons, color, and confidence scores.
-- **Privacy-First Microcopy**: Reassuring language reinforces that all analysis happens locally on the device.
-- **Clean Visual Hierarchy**: Uses rounded cards (24-28px), Material 3 typography, and a "cybersecurity blue" palette to create a professional assistant feel.
-- **Responsive & Accessible**: Optimized for mobile phones, desktop windows, and dark mode.
-- **Originality**: The design is a custom creation focused on security UX best practices; it does not use any copyrighted branding or assets.
-
-## Project Architecture
-- **Models**: Defines `RiskLevel`, `ScamCategory`, `ExtractedFeatures`, `ScamSignal`, and `ScamAnalysisResult`.
-- **Services**:
-  - `FeatureExtractorService`: Parses raw text into structured features.
-  - `MlScamClassifierService`: Applies weighted scoring and combination rules.
-  - `ScamAnalyzerService`: Orchestrates the analysis pipeline.
-  - `LocalFeedbackStorageService`: Manages persistence of user feedback and adaptive weights.
-  - `FeedbackLearningService`: Calculates weight adjustments based on user feedback.
-- **ViewModel**: `ScamDetectorViewModel` manages UI state and the analysis lifecycle.
-- **Screens/Widgets**: Declarative UI components built with a "premium assistant" aesthetic.
-
-## Screenshots
-![Home Screen](screenshots/home.png)
-![Dangerous Result](screenshots/dangerous_result.png)
-![Safe Result](screenshots/safe_result.png)
+| Security Dashboard | Analysis Result | Adaptive Feedback |
+| :---: | :---: | :---: |
+| ![Dashboard](https://via.placeholder.com/200x400?text=Dashboard) | ![Result](https://via.placeholder.com/200x400?text=Result) | ![Feedback](https://via.placeholder.com/200x400?text=Feedback) |
 
 ## AI Interaction Log
 
-### 1. Architecture Planning
-**Prompt:** "Suggest a clean architecture for a local scam detector that mimics an ML pipeline with feature extraction and classification."
-**AI Suggestion:** Recommended a three-tier service structure: Extractor -> Classifier -> Analyzer.
-**What I Accepted:** The three-tier service separation for better testability.
-**What I Changed:** Added a dedicated `ExtractedFeatures` DTO to decouple the layers.
+Here are 5 key interactions with Antigravity (AI Coding Assistant) that shaped this project:
 
-### 2. Feature Extraction Design
-**Prompt:** "Create a list of regex and keywords to detect banking scams, delivery scams, and lookalike domains."
-**AI Suggestion:** Provided comprehensive lists for urgency, threats, and brand keywords.
-**What I Accepted:** Most keyword lists and the URL extraction regex.
-**What I Changed:** Refined the domain extraction logic to avoid flagging official Norton/Gen domains as suspicious.
+1.  **UI Overhaul**: 
+    - *Prompt*: "Improve the Flutter UI to look closer to a modern mobile security app inspired by Norton 360, but avoid exact branding."
+    - *AI Response*: Restructured the app into a "Security Dashboard" with high-visibility status cards and premium Material 3 styling.
+    - *Commentary*: This transformed a simple text checker into a professional-feeling security product, significantly improving the "Trust Factor."
 
-### 3. ML-Style Classifier Design
-**Prompt:** "Design a weighted scoring model and combination rules for phishing detection."
-**AI Suggestion:** Suggested weights ranging from 10 to 40 and specific pattern rules.
-**What I Accepted:** The combination rule for "Problem + Action + Link".
-**What I Changed:** Adjusted the thresholds (60 for Dangerous) to ensure the required test cases passed with high confidence.
+2.  **Responsibility & Layout**:
+    - *Prompt*: "Fix the Flutter RenderFlex overflow in scam_detector_screen.dart."
+    - *AI Response*: Introduced `SingleChildScrollView` and `Wrap` layouts.
+    - *Commentary*: Essential fix that ensured the app works perfectly on small Android phones and large desktop windows/web browsers.
 
-### 4. Flutter UI/UX Improvement
-**Prompt:** "Make the UI look like a premium cybersecurity assistant. Use Material 3, soft gradients, and white rounded cards."
-**AI Suggestion:** Suggested using `LinearGradient` for the background and `Sliver`-based scrolling.
-**What I Accepted:** The soft indigo gradient and the card-based layout.
-**What I Changed:** Customized the "Step 1, 2, 3" indicators to use circular badges for a cleaner look.
+3.  **Precision Heuristics**:
+    - *Prompt*: "Improve ScamAnalyzerService to detect account restriction phrases like 'account has been limited' and suspicious banking domain patterns."
+    - *AI Response*: Added a robust `FeatureExtractorService` with regex-based keyword and URL analysis.
+    - *Commentary*: This moved the app from a basic keyword checker to a specialized phishing detector that handles common bank impersonation tactics.
 
-### 5. Unit Test Generation
-**Prompt:** "Generate unit tests for the classifier covering banking, delivery, and prize scams."
-**AI Suggestion:** Provided test templates for `ScamAnalyzerService`.
-**What I Accepted:** The `expect` patterns and setup/teardown logic.
-**What I Changed:** Added specific category verification and manual review comments to the tests.
+4.  **Adaptive Learning Logic**:
+    - *Prompt*: "Add a user feedback system so the classifier can improve locally over time without a backend."
+    - *AI Response*: Implemented `FeedbackLearningService` using `shared_preferences` to adjust feature weights.
+    - *Commentary*: This implemented the "AI-First" requirement, creating a local intelligence loop that respects privacy.
+
+5.  **Feedback Loop Correction**:
+    - *Prompt*: "When I repeatedly mark the same message as 'Actually scam', it still shows as Safe. Fix the learning system."
+    - *AI Response*: Added **Message Fingerprinting**. The app now hashes message content and applies specific boosts to exact matches.
+    - *Commentary*: This solved the "persistence" problem, making the app's learning feel immediate and tangible to the user.
 
 ## AI Code Review Summary
-- **AI suggested** separating feature extraction from classification to allow for future ML model integration.
-- **AI suggested** adding combination rules to handle "multi-signal" phishing patterns that single-keyword checks miss.
-- **AI suggested** adding edge case tests (empty input, short input) to improve robustness.
-- **AI suggested** avoiding absolute claims like "detects all phishing" for ethical and liability reasons.
-- **I applied these changes** and refined the logic to meet the Gen Digital intern submission standards.
+
+- **Asynchronous Optimization**: The AI identified that moving to `shared_preferences` required refactoring the analysis engine from synchronous to asynchronous. It provided a clean pattern for "loading weights -> analyzing -> returning results."
+- **Feature Key Centralization**: During the feedback loop fix, the AI suggested creating `FeatureKeys` constants. This prevented "magic string" bugs where the learning service was updating different keys than the classifier was reading.
+- **Responsive Architecture**: The AI suggested using `ConstrainedBox` with a max-width of 720px for the dashboard. This ensures the mobile-first design doesn't look "stretched" when running on a web browser or tablet.
 
 ## Reflection
-Building this Scam Message Detector taught me the value of **hybrid thinking** in security products. While heuristics are powerful, structuring them as a local ML-style classifier makes the system much more maintainable and ready for future upgrades (like TensorFlow Lite). I learned that effective phishing detection requires looking at both technical signals (URLs) and social engineering tactics (urgency, threats). Most importantly, I learned how to use AI as a high-velocity pair programmer—leveraging its ability to generate boilerplate and keyword lists while maintaining human oversight for critical logic and UX polish.
+
+### What did I learn?
+I learned how to build a **Privacy-First AI** loop. In many modern apps, data is sent to a cloud for processing. Here, we proved that you can create an intelligent, adaptive system that stays entirely on the user's device. I also deepened my understanding of Material 3's premium aesthetics and how to manage complex reactive state with `Provider`.
+
+### What would I do differently?
+If I had more time, I would integrate a lightweight **TFLite (TensorFlow Lite)** model for Natural Language Processing alongside the heuristic engine. While our "weighted heuristic + fingerprinting" approach is deterministic and stable, a transformer-based model could detect "tone" and "sentiment" (like excessive urgency) even better than keyword lists. I would also add **Multilingual Support**, as phishing is a global problem and often targets non-English speakers with specific local language nuances.
+
+---
+**Author**: Rufat Azizzade  
+**Submission Date**: May 15, 2026
