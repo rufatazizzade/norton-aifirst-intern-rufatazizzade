@@ -1,4 +1,4 @@
-# Scam Message Detector — Gen Digital / Norton Internship Prototype
+# Scam Message Detector — Gen Digital Internship Prototype
 
 A professional-grade, privacy-first mobile security assistant inspired by **Norton Genie**. This app uses a local, human-in-the-loop adaptive classifier to detect phishing and smishing patterns in SMS and emails.
 
