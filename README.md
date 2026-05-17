@@ -33,12 +33,9 @@ A professional-grade, privacy-first mobile security assistant inspired by **Nort
     flutter test
     ```
 
-## App Screenshots
-*(Note: Please replace these placeholders with actual screenshots from your device/emulator)*
+## App Demo with video
 
-| Security Dashboard | Analysis Result | Adaptive Feedback |
-| :---: | :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/200x400?text=Dashboard) | ![Result](https://via.placeholder.com/200x400?text=Result) | ![Feedback](https://via.placeholder.com/200x400?text=Feedback) |
+https://drive.google.com/file/d/1e_z9rP5uTFRSoIm4ilRuT7P4mkGvzbsV/view?usp=sharing
 
 ## AI Interaction Log
 
